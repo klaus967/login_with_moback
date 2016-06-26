@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Login Module</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script src="js/moback.js" type="text/javascript"></script> 
+         <script src="https://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
+            
+    </head>
+    <body onload="init();">
+
+        <script type="text/javascript">
+            alert("hello world"); 
+            // This will start the Moback's SDK. You should have an account at moback.com
+            // Enter your app's credentials in config.txt
+            Moback.initialize("NTdkZjM3MjMtNWMyMS00NGNjLTk4OWEtOWIwZGQzNjA4ZGQx", "ZDRjMzM2YjYtZjRlZC00ZTIxLWFlNDAtNDdkN2QxYTEwYThh");
+
+             var instanceID;
+
+            function init() {
+                window.location = "mobincube://javascript/setValues({instance})";
+
+
+            }
+
+            function setValues(instance) {
+                instanceID = instance.toString();
+                instanceID = instanceID.replace("+", "");             
+                instanceID = instanceID.replace(".", "");
+                alert(instanceID);
+                checkUser();
+            }
+
+            function checkUser() {
+                alert("en checkuser antes"); 
+                var mobackUser = new Moback.userMgr();
+                alert("en checkuser");
+                //alert(mobackUser.user);
+                //alert(mobackUser.data);
+                mobackUser.login(instanceID, "pass123", function (user) {
+                   alert(JSON.stringify(user, null, 4));
+                   
+                    if (user.hasOwnProperty('objectId')) {
+                        window.location = "mobincube://action/section/Pantalla inicial";
+                    } else {
+                        createAccount();
+                    }
+                });
+            }
+
+            function createAccount() {
+                var mobackUser = new Moback.userMgr();
+                alert("encreateaccount");
+                alert(instanceID);
+                //Set properties of the user object
+                mobackUser.set("userId", instanceID);
+                mobackUser.set("password", "pass123");
+                mobackUser.set("email", instanceID + "@mobincubeapp.com");
+                mobackUser.set("firstname", instanceID);
+
+                mobackUser.createUser(function (data) {
+                    alert(JSON.stringify(data, null, 4));
+
+                    if (data.code === "1000") {
+                        login( instanceID );
+                        alert("tras1000");
+                    } else {
+                        alert("mal creada");
+                        mobincube("action/section/prohibido");
+                    }
+
+                });
+            }
+            
+            function mobincube(action) {
+                alert("enmobincube");
+                window.location = "mobincube://"+action;
+            }
+
+
+        </script>
+    </body>
+</html>
